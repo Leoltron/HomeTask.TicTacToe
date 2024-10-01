@@ -1,0 +1,58 @@
+﻿@using System.Text.Json
+@using System.Text.Json.Serialization
+@using HomeTask.TicTacToe.Models.Games
+@model HomeTask.TicTacToe.Models.Games.GameContext
+
+@{
+    ViewData["Title"] = "Tic-Tac-Toe";
+    var gameJson = JsonSerializer.Serialize(Model, new JsonSerializerOptions
+    {
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    });
+}
+
+<div id="gameContainer" data-game="@gameJson" data-is>
+    <div class="container text-center">
+        <h1>Tic Tac Toe</h1>
+        <h2>Game @Model.Game.Id</h2>
+        <h2>You are player @Model.PlayerNumber</h2>
+        <button id="newGame" class="btn btn-primary">New Game</button>
+
+        <div class="container role-selection-container">
+            @if (Model.Game.PlayerRoleSelection == PlayerRoleSelection.NotSelected)
+            {
+                <div class="role-selector">
+                    <h1>Select X or O</h1>
+                    <div class="d-flex justify-content-center">
+                        <button id="selectX" class="btn btn-primary btn-x">X</button>
+                        <button id="selectO" class="btn btn-danger btn-o">O</button>
+                    </div>
+                </div>
+            }
+
+            <div class="mt-4">
+                <p id="selectedMessage" class="fs-4">@(Model.Game.PlayerRoleSelection == PlayerRoleSelection.NotSelected ? "" : $"You are {Model.PlayerRole.ToString()}")</p>
+            </div>
+        </div>
+
+        <div id="game" class="game-board">
+            @for (var y = 0; y < 3; y++)
+            {
+                @for (var x = 0; x < 3; x++)
+                {
+                    <div class="cell" data-cell data-index="@(y * 3 + x)" data-x="@x" data-y="@y" data-state="@Model.Game.Board[y][x]"></div>
+                }
+            }
+        </div>
+        <div class="mt-4">
+            <p id="stateMessage" class="fs-4"></p>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/game.js"></script>
